@@ -2,6 +2,7 @@ package com.poc.function.service;
 
 import com.poc.function.dto.GreetingResponse;
 import com.poc.function.model.User;
+import com.poc.function.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -10,7 +11,14 @@ import java.util.List;
 
 @Service
 public class UserService {
+
+    private final UserRepository userRepository;
     List<User> users = new ArrayList<>();
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
     @PostConstruct
     public void init() {
         User user = new User();
@@ -22,16 +30,19 @@ public class UserService {
         users.add(user);
     }
 
-    public GreetingResponse getUsers(String name) {
-        User user = new User();
-        user.setId("1");
-        user.setName(name);
-        users.add(user);
-        return new GreetingResponse(users.toString());
+    public List<User> getUsers(String name) {
+        List<User> userList = new ArrayList<>();
+        userList = userRepository.getUsers();
+        return userList;
     }
 
     public GreetingResponse saveUser(User user) {
-        users.add(user);
-        return new GreetingResponse(users.toString());
+        try {
+            user.setId(String.valueOf(userRepository.getNextSequenceId()));
+            userRepository.saveUser(user);
+        } catch (Exception e) {
+            return new GreetingResponse(e.getMessage());
+        }
+        return new GreetingResponse(user.getName());
     }
 }

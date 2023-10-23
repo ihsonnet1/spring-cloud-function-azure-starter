@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.function.Function;
 
 @Component
@@ -21,7 +22,7 @@ public class BulkDataQueryFunction {
     }
 
     @Bean
-    public Function<String, GreetingResponse> getUser() {
+    public Function<String, List<User>> getUser() {
         return name -> userService.getUsers(name);
     }
 }
